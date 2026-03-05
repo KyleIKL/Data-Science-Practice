@@ -22,4 +22,15 @@ from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, classifi
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 # II.Data loading and preprocessing
+# Load the dataset and check missing values
+data = pd.read_csv(r"E:\Project95\Projects\Smart Freight Decision Tool\global_supply_chain_risk_2026.csv")
+print(data.head())
+print(data.isnull().sum())
+
+# III.Exploratory Data Analysis (EDA)
+# Visualize
+sns.scatterplot(x=data['Distance_km'], y=data['Geopolitical_Risk_Score'], hue=data['Transport_Mode'])
+plt.show()
+# 
+
 
