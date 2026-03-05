@@ -27,10 +27,21 @@ data = pd.read_csv(r"E:\Project95\Projects\Smart Freight Decision Tool\global_su
 print(data.head())
 print(data.isnull().sum())
 
-# III.Exploratory Data Analysis (EDA)
-# Visualize
-sns.scatterplot(x=data['Distance_km'], y=data['Geopolitical_Risk_Score'], hue=data['Transport_Mode'])
-plt.show()
-# 
+#III.
 
+# Numerical features
+num_features = ['Distance_km','Weight_MT','Fuel_Price_Index','Geopolitical_Risk_Index','Carrier_Reliability_Score']
 
+# Categorical features
+cat_features = ['Transport_Mode','Product_Category','Weather_Condition','Origin_Port','Destination_Port']
+
+# Label
+target_reg = 'Lead_Time_Days'           # 回归目标
+target_class = 'Disruption_Occurred'   # 分类目标
+
+# Label encoding for categorical features
+le_dict = {}
+for col in cat_features:
+    le = LabelEncoder()
+    data[col] = le.fit_transform(data[col])
+    le_dict[col] = le
