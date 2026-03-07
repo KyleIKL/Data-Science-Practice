@@ -27,21 +27,64 @@ data = pd.read_csv(r"E:\Project95\Projects\Smart Freight Decision Tool\global_su
 print(data.head())
 print(data.isnull().sum())
 
-#III.
-
+# III.PRE
 # Numerical features
-num_features = ['Distance_km','Weight_MT','Fuel_Price_Index','Geopolitical_Risk_Index','Carrier_Reliability_Score']
-
+num_features = ['Distance_km','Weight_MT','Fuel_Price_Index','Geopolitical_Risk_Score','Carrier_Reliability_Score']
 # Categorical features
 cat_features = ['Transport_Mode','Product_Category','Weather_Condition','Origin_Port','Destination_Port']
-
-# Label
-target_reg = 'Lead_Time_Days'           # 回归目标
-target_class = 'Disruption_Occurred'   # 分类目标
-
-# Label encoding for categorical features
-le_dict = {}
+# Initialize LabelEncoder
+le = LabelEncoder()
+# Encode categorical features
 for col in cat_features:
-    le = LabelEncoder()
     data[col] = le.fit_transform(data[col])
-    le_dict[col] = le
+# Verify if encoding is successful
+print(data[cat_features].head())
+
+# IV.Feature selection and model training
+# 检查数据类型
+print(data.dtypes)  # 查看所有列的数据类型
+
+# 将所有非数值列从 X 中移除
+data = data.drop(['Shipment_ID', 'Date'], axis=1)
+X = data.drop('Transport_Mode', axis=1)  # 删除目标列
+y = data['Transport_Mode']  # 目标列
+
+# 检查数据形状和类型
+print(X.shape, y.shape)  # 确保 X 是二维数据，y 是一维数据
+
+# 划分训练集和测试集（80% 训练，20% 测试）
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 检查划分后的数据形状
+print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+
+
+# 划分训练集和测试集（80% 训练，20% 测试）
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 检查划分后的数据形状
+print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+
+
+
+# 初始化 StandardScaler
+scaler = StandardScaler()
+
+# 标准化数值特征
+X_train[num_features] = scaler.fit_transform(X_train[num_features])
+X_test[num_features] = scaler.transform(X_test[num_features])
+
+
+# 初始化 XGBoost 分类器
+xgb_classifier = xgb.XGBClassifier(n_estimators=100, random_state=42)
+
+# 训练模型
+xgb_classifier.fit(X_train, y_train)
+
+# 预测
+y_pred_xgb = xgb_classifier.predict(X_test)
+
+# 评估模型
+print("XGBoost Accuracy:", accuracy_score(y_test, y_pred_xgb))
+print("XGBoost Classification Report:")
+print(classification_report(y_test, y_pred_xgb))
