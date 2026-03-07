@@ -41,50 +41,76 @@ for col in cat_features:
 print(data[cat_features].head())
 
 # IV.Feature selection and model training
-# 检查数据类型
-print(data.dtypes)  # 查看所有列的数据类型
 
-# 将所有非数值列从 X 中移除
+print(data.dtypes)
+
+
 data = data.drop(['Shipment_ID', 'Date'], axis=1)
-X = data.drop('Transport_Mode', axis=1)  # 删除目标列
-y = data['Transport_Mode']  # 目标列
+X = data.drop('Transport_Mode', axis=1) 
+y = data['Transport_Mode']  
 
-# 检查数据形状和类型
-print(X.shape, y.shape)  # 确保 X 是二维数据，y 是一维数据
 
-# 划分训练集和测试集（80% 训练，20% 测试）
+print(X.shape, y.shape)  
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# 检查划分后的数据形状
 print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
-
-# 划分训练集和测试集（80% 训练，20% 测试）
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# 检查划分后的数据形状
-print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
-
-
-
-# 初始化 StandardScaler
 scaler = StandardScaler()
 
-# 标准化数值特征
 X_train[num_features] = scaler.fit_transform(X_train[num_features])
 X_test[num_features] = scaler.transform(X_test[num_features])
 
-
-# 初始化 XGBoost 分类器
 xgb_classifier = xgb.XGBClassifier(n_estimators=100, random_state=42)
 
-# 训练模型
 xgb_classifier.fit(X_train, y_train)
 
-# 预测
 y_pred_xgb = xgb_classifier.predict(X_test)
 
-# 评估模型
 print("XGBoost Accuracy:", accuracy_score(y_test, y_pred_xgb))
 print("XGBoost Classification Report:")
 print(classification_report(y_test, y_pred_xgb))
+
+# Hyperparameter tuning using GridSearchCV
+from sklearn.model_selection import GridSearchCV
+import xgboost as xgb
+
+param_grid = {
+    'n_estimators': [100, 200, 300],  # 树的数量
+    'max_depth': [3, 5, 7],            # 树的最大深度
+    'learning_rate': [0.01, 0.1, 0.2], # 学习率
+    'subsample': [0.8, 0.9, 1.0],      # 训练样本的比例
+    'colsample_bytree': [0.8, 0.9, 1.0], # 特征列的比例
+    'min_child_weight': [1, 2, 3],     # 子节点的最小权重
+    'gamma': [0, 0.1, 0.2]             # 剪枝参数
+}
+
+
+xgb_classifier = xgb.XGBClassifier(random_state=42)
+
+grid_search = GridSearchCV(estimator=xgb_classifier, param_grid=param_grid, cv=3, n_jobs=-1, verbose=1)
+
+grid_search.fit(X_train, y_train)
+
+print("Best parameters found by GridSearchCV:")
+print(grid_search.best_params_)
+
+# 使用最佳参数训练模型
+best_xgb_classifier = grid_search.best_estimator_
+
+# 预测
+y_pred_best_xgb = best_xgb_classifier.predict(X_test)
+
+# 评估模型
+from sklearn.metrics import accuracy_score, classification_report
+
+print("Best XGBoost Accuracy:", accuracy_score(y_test, y_pred_best_xgb))
+print("Best XGBoost Classification Report:")
+print(classification_report(y_test, y_pred_best_xgb))
+
+# 保存训练好的模型和标准化器
+from joblib import dump
+
+# 假设 classifier 是你的训练好的模型，scaler 是标准化器
+dump(best_xgb_classifier, 'best_xgb_model.joblib')  # 保存模型
+dump(scaler, 'scaler.joblib')  # 保存标准化器
