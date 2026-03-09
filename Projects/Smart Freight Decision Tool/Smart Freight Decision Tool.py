@@ -35,8 +35,17 @@ cat_features = ['Transport_Mode','Product_Category','Weather_Condition','Origin_
 # Initialize LabelEncoder
 le = LabelEncoder()
 # Encode categorical features
+# 对每个类别特征进行编码
 for col in cat_features:
-    data[col] = le.fit_transform(data[col])
+    # 为每个类别特征创建新的 LabelEncoder 实例
+    le = LabelEncoder()
+    data[col] = le.fit_transform(data[col])  # 对当前列进行编码
+    
+    # 打印每个类别特征的映射关系
+    print(f"Mapping for {col}:")
+    print(f"Original Categories: {le.classes_}")  # 显示原始类别标签
+    mapping = dict(zip(le.classes_, range(len(le.classes_))))  # 映射为字典
+    print(f"Corresponding encoded values: {mapping}\n")
 # Verify if encoding is successful
 print(data[cat_features].head())
 
@@ -114,3 +123,4 @@ from joblib import dump
 # 假设 classifier 是你的训练好的模型，scaler 是标准化器
 dump(best_xgb_classifier, 'best_xgb_model.joblib')  # 保存模型
 dump(scaler, 'scaler.joblib')  # 保存标准化器
+
