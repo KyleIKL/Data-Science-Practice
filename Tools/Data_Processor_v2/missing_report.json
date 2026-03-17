@@ -1,0 +1,30 @@
+{
+  "dropped_rows_count": 0,
+  "dropped_columns": {},
+  "fill_values": {
+    "order_date": "2024-05-07 00:00:00",
+    "customer_age": 41.0,
+    "product_category": "__MISSING__",
+    "discount_applied": "__MISSING__",
+    "payment_method": "__MISSING__",
+    "delivery_time_days": 5.0,
+    "customer_rating": 2.9,
+    "order_status": "__MISSING__"
+  },
+  "column_strategy": {
+    "order_id": "keep_identifier",
+    "order_date": "fill_datetime_with_mode",
+    "customer_age": "fill_numeric_with_41.0",
+    "product_category": "fill_categorical_with___MISSING__",
+    "order_value": "keep_identifier",
+    "discount_applied": "fill_categorical_with___MISSING__",
+    "payment_method": "fill_categorical_with___MISSING__",
+    "delivery_time_days": "fill_numeric_with_5.0",
+    "customer_rating": "fill_numeric_with_2.9",
+    "order_status": "fill_categorical_with___MISSING__"
+  },
+  "final_shape": [
+    2600,
+    10
+  ]
+}

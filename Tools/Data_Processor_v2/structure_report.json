@@ -1,0 +1,97 @@
+{
+  "n_rows": 2600,
+  "n_cols": 10,
+  "numeric_columns": [
+    "order_id",
+    "customer_age",
+    "order_value",
+    "delivery_time_days",
+    "customer_rating"
+  ],
+  "categorical_columns": [
+    "product_category",
+    "discount_applied",
+    "payment_method",
+    "order_status"
+  ],
+  "datetime_columns": [
+    "order_date"
+  ],
+  "id_like_columns": [
+    "order_id",
+    "order_value"
+  ],
+  "long_text_columns": [],
+  "columns": {
+    "order_id": {
+      "dtype": "int64",
+      "inferred_type": "numeric",
+      "missing_ratio": 0.0,
+      "nunique_non_null": 2600,
+      "unique_ratio_non_null": 1.0
+    },
+    "order_date": {
+      "dtype": "str",
+      "inferred_type": "datetime",
+      "missing_ratio": 0.0,
+      "nunique_non_null": 364,
+      "unique_ratio_non_null": 0.14
+    },
+    "customer_age": {
+      "dtype": "int64",
+      "inferred_type": "numeric",
+      "missing_ratio": 0.0,
+      "nunique_non_null": 48,
+      "unique_ratio_non_null": 0.0185
+    },
+    "product_category": {
+      "dtype": "str",
+      "inferred_type": "categorical",
+      "missing_ratio": 0.0,
+      "nunique_non_null": 6,
+      "unique_ratio_non_null": 0.0023
+    },
+    "order_value": {
+      "dtype": "float64",
+      "inferred_type": "numeric",
+      "missing_ratio": 0.0,
+      "nunique_non_null": 2599,
+      "unique_ratio_non_null": 0.9996
+    },
+    "discount_applied": {
+      "dtype": "str",
+      "inferred_type": "categorical",
+      "missing_ratio": 0.0,
+      "nunique_non_null": 2,
+      "unique_ratio_non_null": 0.0008
+    },
+    "payment_method": {
+      "dtype": "str",
+      "inferred_type": "categorical",
+      "missing_ratio": 0.0,
+      "nunique_non_null": 4,
+      "unique_ratio_non_null": 0.0015
+    },
+    "delivery_time_days": {
+      "dtype": "int64",
+      "inferred_type": "numeric",
+      "missing_ratio": 0.0,
+      "nunique_non_null": 10,
+      "unique_ratio_non_null": 0.0038
+    },
+    "customer_rating": {
+      "dtype": "float64",
+      "inferred_type": "numeric",
+      "missing_ratio": 0.0,
+      "nunique_non_null": 41,
+      "unique_ratio_non_null": 0.0158
+    },
+    "order_status": {
+      "dtype": "str",
+      "inferred_type": "categorical",
+      "missing_ratio": 0.0,
+      "nunique_non_null": 3,
+      "unique_ratio_non_null": 0.0012
+    }
+  }
+}
