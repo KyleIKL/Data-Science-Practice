@@ -5,15 +5,31 @@ import json
 
 
 # =========================
-# 1. 读取文件
+# 1. 读取文件（加入CSV编码兜底）
 # =========================
 def read_data(file_path):
     ext = os.path.splitext(file_path)[1].lower()
 
     if ext == ".csv":
-        return pd.read_csv(file_path)
+        encodings_to_try = ["utf-8", "utf-8-sig", "gbk", "gb18030", "latin1"]
+        last_error = None
+
+        for enc in encodings_to_try:
+            try:
+                df = pd.read_csv(file_path, encoding=enc)
+                return df, f"csv ({enc})"
+            except Exception as e:
+                last_error = e
+
+        raise ValueError(f"CSV 文件读取失败，已尝试多种编码但仍无法打开。最后错误：{last_error}")
+
     elif ext == ".xlsx":
-        return pd.read_excel(file_path)
+        try:
+            df = pd.read_excel(file_path)
+            return df, "xlsx"
+        except Exception as e:
+            raise ValueError(f"Excel 文件读取失败：{e}")
+
     else:
         raise ValueError("只支持 .csv 或 .xlsx 文件")
 
@@ -121,10 +137,12 @@ def handle_missing_values(df, structure_report):
     # -------------------------
     # 1. 先删高缺失行
     # -------------------------
+    before_rows = result.shape[0]
     row_missing_ratio = result.isna().mean(axis=1)
     keep_mask = row_missing_ratio < 0.90
     report["dropped_rows_count"] = int((~keep_mask).sum())
     result = result.loc[keep_mask].reset_index(drop=True)
+    after_rows = result.shape[0]
 
     # -------------------------
     # 2. 按列处理
@@ -216,6 +234,10 @@ def handle_missing_values(df, structure_report):
             report["column_strategy"][col] = "fallback_fill"
 
     report["final_shape"] = result.shape
+    report["rows_before"] = int(before_rows)
+    report["rows_after"] = int(after_rows)
+    report["dropped_columns_count"] = int(len(report["dropped_columns"]))
+
     return result, report
 
 
@@ -244,23 +266,32 @@ def save_outputs(df, report, structure_report, output_folder):
 # 7. 主程序
 # =========================
 def main():
-    print("====== 电商数据缺失值处理工具（第一版）======")
+    print("====== 电商数据缺失值处理工具（第二版）======")
 
     input_path = input("请输入数据文件地址（csv 或 xlsx）: ").strip().strip('"')
     output_folder = input("请输入保存文件夹地址: ").strip().strip('"')
 
     try:
         print("\n[1/4] 正在读取数据...")
-        df = read_data(input_path)
-        print(f"读取成功，数据形状: {df.shape}")
+        df, read_method = read_data(input_path)
+        print(f"读取成功，方式: {read_method}")
+        print(f"原始数据形状: {df.shape}")
 
         print("\n[2/4] 正在探测数据结构...")
         structure_report = detect_structure(df)
         print("结构探测完成")
+        print(f"数值列: {len(structure_report['numeric_columns'])} 列")
+        print(f"类别列: {len(structure_report['categorical_columns'])} 列")
+        print(f"时间列: {len(structure_report['datetime_columns'])} 列")
+        print(f"ID-like列: {len(structure_report['id_like_columns'])} 列")
+        print(f"长文本列: {len(structure_report['long_text_columns'])} 列")
 
         print("\n[3/4] 正在处理缺失值...")
         cleaned_df, missing_report = handle_missing_values(df, structure_report)
-        print(f"缺失值处理完成，处理后形状: {cleaned_df.shape}")
+        print("缺失值处理完成")
+        print(f"删除行数: {missing_report['dropped_rows_count']}")
+        print(f"删除列数: {missing_report['dropped_columns_count']}")
+        print(f"处理后形状: {cleaned_df.shape}")
 
         print("\n[4/4] 正在保存结果...")
         data_path, report_path, structure_path = save_outputs(

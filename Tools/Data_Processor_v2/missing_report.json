@@ -26,5 +26,8 @@
   "final_shape": [
     2600,
     10
-  ]
+  ],
+  "rows_before": 2600,
+  "rows_after": 2600,
+  "dropped_columns_count": 0
 }
