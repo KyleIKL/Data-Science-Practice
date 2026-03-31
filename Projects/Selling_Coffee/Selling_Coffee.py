@@ -3,42 +3,36 @@
 
 
 # A.Import
-# Import streamlit
-import streamlit as st 
-# Import data analysis basic libraries
+
+import streamlit as st
 import pandas as pd
 import numpy as np
-# Import datetime preocessing libraries
-import datetime as dt
+
+from pathlib import Path
 from datetime import datetime, timedelta
-# Import visualization libraries
+
 import plotly.express as px
-import plotly.graph_objects as go   # Main
-import matplotlib.pyplot as plt
-import seaborn as sns   # Support
-# Import machine learning libraries
-from sklearn.model_selection import train_test_split
+import plotly.graph_objects as go
+
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-from sklearn.ensemble import RandomForestRegressor
-import xgboost as xgb
 from xgboost import XGBRegressor
-# Import feature engineering libraries
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
-# More of time series analysis libraries
-from sklearn.model_selection import TimeSeriesSplit
-# Filter warnings
+
 import warnings
 warnings.filterwarnings('ignore')
-# About streamlit
+
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+
 @st.cache_data
 def load_data():
-    return pd.read_csv("coffee_shop_sales.csv")
+    return pd.read_csv(BASE_DIR / "coffee_shop_sales.csv")
+
+tsk = load_data()
 
 # B.Load and sort data
 # Proceed basic cleaning process for the original dataset
-tsk = pd.read_csv(r"E:\Project95\Projects\Selling_Coffee\coffee_shop_sales.csv")
+
 # TEST1
 tsk.head()
 tsk.info()
